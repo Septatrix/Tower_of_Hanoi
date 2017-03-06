@@ -3,29 +3,36 @@
   <head>
     <meta charset="utf-8">
     <title>Tower of Hanoi</title>
-    <script src="hanoi.js" charset="utf-8"></script>
-    <script src="hanoiCanvas.js" charset="utf-8"></script>
-    <!-- <script src="hanoiDOM.js" charset="utf-8"></script> -->
+    <script src="hanoiCustomElements.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.7/p5.min.js" charset="utf-8"></script>
     <style>
       body {
         margin: 0;
         position: absolute;
-        top:0;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        width: 100%;
+        height: 100%;
       }
-      canvas {
-        margin: auto;
-        position: absolute;
-        top:0;
-        bottom: 0;
-        left: 0;
-        right: 0;
+      septatrix-hanoi-game {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      septatrix-hanoi-rod {
+        position: relative;
+        display: inline-block;
+        width: calc(100%/3);
+        height: 100%;
+        transform: scale(-1);
+      }
+      septatrix-hanoi-disk {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
       }
     </style>
   </head>
   <body>
+    <septatrix-hanoi-game disks="6"></septatrix-hanoi-game>
   </body>
 </html>

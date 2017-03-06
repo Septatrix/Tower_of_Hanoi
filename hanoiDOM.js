@@ -1,52 +1,48 @@
+"use-strict";
+
 var hanoi;
-var selected;
+var selected1, selected2;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  hanoi = new Hanoi(3, 3);
+  noCanvas();
+  hanoi = new Hanoi(5, 3);
   noLoop();
 }
 
-function draw() {
-  background(200);
-  hanoi.draw();
-}
-
 function keyPressed() {
-  if (selected == undefined) {
+  if (selected1 == undefined) {
     switch (keyCode) {
       case 49: case 97:
-        selected = 0;
+        selected1 = 0;
         break;
       case 50: case 98:
-        selected = 1;
+        selected1 = 1;
         break;
       case 51: case 99:
-        selected = 2;
+        selected1 = 2;
         break;
       default:
+        break;
     }
   } else {
     switch (keyCode) {
       case 49: case 97:
-        hanoi.moveDisk(selected, 0);
-        selected = null;
+        selected2 = 0;
         break;
       case 50: case 98:
-        hanoi.moveDisk(selected, 1);
-        selected = null;
+        selected2 = 1;
         break;
       case 51: case 99:
-        hanoi.moveDisk(selected, 2);
-        selected = null;
+        selected2 = 2;
         break;
       default:
+        break;
     }
   }
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  if (selected1 != undefined && selected2 != undefined) {
+    hanoi.moveDisk(selected1, selected2);
+    selected1 = selected2 = null;
+  }
 }
 
 class Hanoi {
@@ -54,15 +50,14 @@ class Hanoi {
     this.rods = [];
     this.numDisks = nDisks;
 
+    this.container = document.createElement('div');
+    this.container.id = 'hanoi-container';
+    this.container.classList.add('hanoi','container');
+    document.body.appendChild(this.container);
+
     for (var i = 0; i < nRods; i++) {
       this.rods.push(
-        new Rod((width / (nRods * 2)) * ((i * 2 ) + 1))
-      );
-    }
-
-    for (var i = 0; i < nDisks; i++) {
-      this.rods[0].unshift(
-        new Disk(i+1)
+        new Rod(this.container, i === 0 ? nDisks : 0)
       );
     }
   }
@@ -78,53 +73,47 @@ class Hanoi {
   }
 
   moveDisk(start, end) {
-    this.rods[end].push(this.rods[start].pop());
-    console.log('Move disk from rod ' + start + ' to rod ' + end);
-    redraw();
+    if(this.rods[start].top().size < this.rods[end].top().size) {
+      this.rods[end].disks.push(this.rods[start].disks.pop());
+      console.log('Move disk from rod ' + start + ' to rod ' + end);
+      redraw();
+    } else {console.log('Invalid move');}
   }
-
-  draw() {
-    for (let rod of this.rods) {
-      rod.draw();
-    }
-  }
-
   // TODO: reset
 }
 
 class Rod {
-  constructor(x) {
-    this.x = x;
-    this.disks = [];
-  }
+  constructor(element, disks) {
+    this.container = document.createElement('div');
+    this.container.classList.add('hanoi','container','rod');
+    this.container.style.backgroundColor = 'hsl(' + Math.floor(Math.random()*256) + ', 50%, 50%)';
+    element.appendChild(this.container);
 
-  push(obj) {
-    return this.disks.push(obj);
-  }
-
-  pop(obj) {
-    return this.disks.pop(obj);
-  }
-
-  unshift(obj) {
-    return this.disks.unshift(obj);
-  }
-
-  draw() {
-    rect(this.x-10, height/4, 20, height/4*3);
-    let drawHeight = height;
-    for (let disk of this.disks) {
-      disk.draw(this.x, drawHeight-=30);
+    for (var i = 0; i < disks; i++) {
+      this.disks.unshift(
+        new Disk(this.container, i+1)
+      );
     }
+  }
+
+  get disks() {
+    return this.container.getElementsByClassName('disk');
+  }
+
+  top() {
+    return this.disks[this.disks.length-1] || {size: Infinity};
   }
 }
 
 class Disk {
-  constructor(size) {
-    this.size = size;
+  constructor(element, size) {
+    this.container = document.createElement('div');
+    this.container.classList.add('hanoi','disk');
+    this.container.style.width = 'calc(90% * ' + 1/size + ')';
+    this.container.style.height = 'calc(10% * ' + 1/1 + ')';
+    this.container.dataset.size = size;
+    element.appendChild(this.container);
   }
 
-  draw(x, y) {
-    rect(x-this.size*50/2, y, this.size*50, 30);
-  }
+  get size() {console.log(this.container.dataset.size);return this.container.dataset.size;}
 }

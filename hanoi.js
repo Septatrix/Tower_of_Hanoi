@@ -37,10 +37,6 @@ function keyPressed() {
   }
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
-
 class Hanoi {
   constructor(nDisks, nRods) {
     this.rods = [];
